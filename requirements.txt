@@ -1,3 +1,4 @@
+appdirs==1.4.3
 astroid==2.3.3
 autopep8==1.4.4
 colorama==0.4.3
@@ -7,6 +8,7 @@ mccabe==0.6.1
 numpy==1.18.0
 opencv-python==4.1.2.30
 pycodestyle==2.5.0
+pygubu==0.9.8.4
 pylint==2.4.4
 six==1.13.0
 typed-ast==1.4.0
