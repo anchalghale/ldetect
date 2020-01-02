@@ -9,8 +9,8 @@
       <property name="row">0</property>
     </layout>
     <child>
-      <object class="ttk.Button" id="Import">
-        <property name="command">import</property>
+      <object class="ttk.Button" id="import">
+        <property name="command">import_</property>
         <property name="text" translatable="yes">Import</property>
         <layout>
           <property name="column">0</property>
@@ -20,7 +20,7 @@
       </object>
     </child>
     <child>
-      <object class="ttk.Button" id="Export">
+      <object class="ttk.Button" id="export">
         <property name="command">export</property>
         <property name="text" translatable="yes">Export</property>
         <layout>
@@ -31,24 +31,24 @@
       </object>
     </child>
     <child>
-      <object class="ttk.Button" id="set_true">
-        <property name="command">set_true</property>
-        <property name="text" translatable="yes">Set true</property>
+      <object class="ttk.Entry" id="coor">
+        <property name="font">TkDefaultFont</property>
+        <property name="takefocus">false</property>
+        <property name="text" translatable="yes">Coordinates</property>
         <layout>
           <property name="column">0</property>
           <property name="propagate">True</property>
-          <property name="row">2</property>
+          <property name="row">4</property>
         </layout>
       </object>
     </child>
     <child>
-      <object class="ttk.Button" id="set_false">
-        <property name="command">set_false</property>
-        <property name="text" translatable="yes">Set false</property>
+      <object class="ttk.Entry" id="value">
+        <property name="text" translatable="yes">Value</property>
         <layout>
           <property name="column">0</property>
           <property name="propagate">True</property>
-          <property name="row">3</property>
+          <property name="row">5</property>
         </layout>
       </object>
     </child>
