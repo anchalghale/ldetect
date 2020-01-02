@@ -2,6 +2,8 @@
 import cv2
 
 from utils import coor_offset, crop, find_center
+from constants import MINIMAP_AREAS
+
 from .exceptions import NoCharacterInMinimap
 
 
@@ -9,9 +11,8 @@ def detect(analytics, img, start, end):
     ''' Finds the league objects '''
     analytics.start_timer('in_range', 'Filtering using in range')
     size = img.shape[:2]
-    output = cv2.inRange(img, start, end)
-    contours, _ = cv2.findContours(
-        output, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    img = cv2.inRange(img, start, end)
+    contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     objects = []
     for contour in contours:
         area = cv2.contourArea(contour)
@@ -34,7 +35,7 @@ def detect(analytics, img, start, end):
 
 def get_minimap_coor(analytics, img):
     ''' Finds the position of character in the minimap '''
-    analytics.start_timer('')
+    analytics.start_timer('get_minimap_coor', 'Finding minimap coordiantes')
     map_ = crop(img, (834, 577), (183, 183))
     img = cv2.inRange(map_, (200, 200, 200), (255, 255, 255))
     contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -42,5 +43,16 @@ def get_minimap_coor(analytics, img):
         raise NoCharacterInMinimap
     box = sorted(contours, key=cv2.contourArea, reverse=True)[0]
     coor = find_center(cv2.boundingRect(box))
-    analytics.end_timer('')
+    analytics.end_timer('get_minimap_coor')
     return coor
+
+
+def get_minimap_areas(analytics, imgs, coor):
+    ''' Finds the position of character in the minimap '''
+    analytics.start_timer('get_minimap_areas', 'Calcualting minimap areas')
+    output = {}
+    for area in MINIMAP_AREAS:
+        pixel = imgs[area['file_name']][coor]
+        output[area['name']] = area['mappings'][tuple(pixel)]
+    analytics.end_timer('get_minimap_areas')
+    return output
