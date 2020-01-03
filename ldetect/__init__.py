@@ -2,8 +2,8 @@
 import cv2
 
 from utils import coor_offset, crop, find_center
-from constants import MINIMAP_AREAS
 
+from .constants import MINIMAP_AREAS
 from .exceptions import NoCharacterInMinimap
 
 

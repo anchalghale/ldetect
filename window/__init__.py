@@ -62,3 +62,12 @@ def focus_window(hwnd):
         win32gui.SetForegroundWindow(hwnd)
     except win32gui.error:
         raise CantForgroundWindowError
+
+
+def close_window(handle):
+    ''' Finds and closes a window with a handle '''
+    try:
+        if handle is not None:
+            win32gui.PostMessage(handle, win32con.WM_CLOSE, 0, 0)
+    except win32gui.error:
+        pass

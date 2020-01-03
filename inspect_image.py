@@ -1,8 +1,11 @@
+''' Interactive image pixel value finder '''
 import sys
 
 import cv2
 
+
 def on_mouse_cb(event, x, y, flags, img):
+    ''' On mouse event callback '''
     if event == cv2.EVENT_LBUTTONDOWN:
         print(f'x: {x}')
         print(f'y: {y}')
