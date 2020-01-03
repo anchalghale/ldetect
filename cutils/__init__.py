@@ -14,7 +14,7 @@ def coor_offset(coor, offset, size):
 
 def get_color_diff(color1, color2):
     ''' Finds the difference between 2 colors '''
-    diff = [abs(color1[i]-abs(color2[i])) for i in range(len(color1))]
+    diff = [abs(int(color1[i])-int(color2[i])) for i in range(len(color1))]
     return sum(diff)
 
 

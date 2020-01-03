@@ -8,18 +8,30 @@ from .colors import SMALL_HP_BARS
 from .exceptions import NoCharacterInMinimap
 
 
+def get_small_hp_value(hp_img):
+    hp_img = hp_img.reshape((60, 3))
+    reference = hp_img[1]
+    for i, value in enumerate(hp_img):
+        if get_color_diff(reference, value) > 20:
+            return i
+    return 60
+
+
 def identify_object(img, coor):
     ''' Indentify an object from the coordiate '''
     size = img.shape[:2]
+    output = {'coor': coor}
     if (img[coor_offset(coor, (27, 16), size)] == (24, 239, 24)).all():
-        name = 'ally_champion'
+        output['name'] = 'ally_champion'
     else:
         color = tuple(img[coor_offset(coor, (1, 1), size)])
+        hp_bar = img[coor[1]+1:coor[1]+2, coor[0]+1:coor[0]+61]
+        output['health'] = get_small_hp_value(hp_bar)
         diffs = {}
         for key, value in SMALL_HP_BARS.items():
             diffs[key] = get_color_diff(value, color)
-        name = sorted(diffs, key=diffs.get)[0]
-    return {'name': name, 'coor': coor}
+        output['name'] = sorted(diffs, key=diffs.get)[0]
+    return output
 
 
 def get_objects(analytics, img, start, end):
