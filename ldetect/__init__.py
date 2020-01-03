@@ -1,35 +1,39 @@
 ''' Object detection module '''
 import cv2
 
-from cutils import coor_offset, crop, find_center
+from cutils import coor_offset, crop, find_center, get_color_diff
 
 from .constants import MINIMAP_AREAS, CAMERA_LOCK, LEVEL_Q, LEVEL_W, LEVEL_E, LEVEL_R
+from .colors import SMALL_HP_BARS
 from .exceptions import NoCharacterInMinimap
 
 
-def detect(analytics, img, start, end):
-    ''' Finds the league objects '''
-    analytics.start_timer('in_range', 'Filtering using in range')
+def identify_object(img, coor):
+    ''' Indentify an object from the coordiate '''
     size = img.shape[:2]
-    img = cv2.inRange(img, start, end)
-    contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    if (img[coor_offset(coor, (27, 16), size)] == (24, 239, 24)).all():
+        name = 'ally_champion'
+    else:
+        color = tuple(img[coor_offset(coor, (1, 1), size)])
+        diffs = {}
+        for key, value in SMALL_HP_BARS.items():
+            diffs[key] = get_color_diff(value, color)
+        name = sorted(diffs, key=diffs.get)[0]
+    return {'name': name, 'coor': coor}
+
+
+def get_objects(analytics, img, start, end):
+    ''' Finds the league objects '''
+    analytics.start_timer('get_objects', 'Finding objects')
+    threshed = cv2.inRange(img, start, end)
+    contours, _ = cv2.findContours(
+        threshed, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     objects = []
     for contour in contours:
         area = cv2.contourArea(contour)
         if area == 0:
-            coor = tuple(contour[0][0])
-            blue, green, red = img[coor_offset(coor, (27, 16), size)]
-            if blue < 25 and green > 230 and red < 25:
-                name = 'ally_champion'
-            elif tuple(img[coor_offset(coor, (1, 1), size)]) == (208, 149, 77):
-                name = 'ally_minion'
-            else:
-                name = 'enemy_minion'
-            objects.append({
-                'name': name,
-                'coor': coor,
-            })
-    analytics.end_timer('in_range')
+            objects.append(identify_object(img, tuple(contour[0][0])))
+    analytics.end_timer('get_objects')
     return objects
 
 
@@ -65,9 +69,9 @@ def is_camera_locked(img):
 
 def is_level_up(img):
     ''' Returns is the camera is locked '''
-    return (
-        (img[LEVEL_Q[::-1]] == [255, 251, 173]).all(),
-        (img[LEVEL_W[::-1]] == [255, 251, 173]).all(),
-        (img[LEVEL_E[::-1]] == [255, 251, 173]).all(),
-        (img[LEVEL_R[::-1]] == [255, 251, 173]).all(),
-    )
+    return {
+        'Q': (img[LEVEL_Q[::-1]] == [255, 251, 173]).all(),
+        'W': (img[LEVEL_W[::-1]] == [255, 251, 173]).all(),
+        'E': (img[LEVEL_E[::-1]] == [255, 251, 173]).all(),
+        'R': (img[LEVEL_R[::-1]] == [255, 251, 173]).all(),
+    }
