@@ -1,9 +1,9 @@
 ''' Object detection module '''
 import cv2
 
-from utils import coor_offset, crop, find_center
+from cutils import coor_offset, crop, find_center
 
-from .constants import MINIMAP_AREAS
+from .constants import MINIMAP_AREAS, CAMERA_LOCK, LEVEL_Q, LEVEL_W, LEVEL_E, LEVEL_R
 from .exceptions import NoCharacterInMinimap
 
 
@@ -36,7 +36,7 @@ def detect(analytics, img, start, end):
 def get_minimap_coor(analytics, img):
     ''' Finds the position of character in the minimap '''
     analytics.start_timer('get_minimap_coor', 'Finding minimap coordiantes')
-    map_ = crop(img, (834, 577), (183, 183))
+    map_ = crop(img, (834, 577, 183, 183))
     img = cv2.inRange(map_, (200, 200, 200), (255, 255, 255))
     contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     if contours == []:
@@ -56,3 +56,18 @@ def get_minimap_areas(analytics, imgs, coor):
         output[area['name']] = area['mappings'][tuple(pixel)]
     analytics.end_timer('get_minimap_areas')
     return output
+
+
+def is_camera_locked(img):
+    ''' Returns is the camera is locked '''
+    return (img[CAMERA_LOCK[::-1]] == [49, 65, 52]).all()
+
+
+def is_level_up(img):
+    ''' Returns is the camera is locked '''
+    return (
+        (img[LEVEL_Q[::-1]] == [255, 251, 173]).all(),
+        (img[LEVEL_W[::-1]] == [255, 251, 173]).all(),
+        (img[LEVEL_E[::-1]] == [255, 251, 173]).all(),
+        (img[LEVEL_R[::-1]] == [255, 251, 173]).all(),
+    )

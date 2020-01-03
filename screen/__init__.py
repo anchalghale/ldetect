@@ -1,24 +1,19 @@
 ''' Module for screenshoting '''
-import logging
 import time
 
-import mss
-import mss.tools
-import numpy
-import win32gui
+import cv2
+import d3dshot
 
 
-def screenshot(rect, margin=0, margin_top=0):
-    ''' Captures window '''
-    with mss.mss() as sct:
-        left, top, right, bot = rect
-        left = left + margin
-        top = top + margin_top
-        width = right - left - margin
-        height = bot - top - margin
+class Screen:
+    ''' Class for screenshoting '''
 
-        monitor = {'top': top, 'left': left, 'width': width, 'height': height}
+    def __init__(self):
+        self.d3d = d3dshot.create(capture_output='numpy')
 
-        sct_img = numpy.array(sct.grab(monitor))
-        sct_img = sct_img[:, :, :3]
-        return sct_img
+    def screenshot(self, analytics, rect):
+        ''' Captures window '''
+        analytics.start_timer('screenshot', 'Screenshoting')
+        img = self.d3d.screenshot(rect)
+        analytics.end_timer('screenshot')
+        return img
