@@ -13,12 +13,10 @@ from analytics import Analytics
 from logger import CliLogger
 
 from builder import Builder
-from utils import imshow
-from lutils import check_and_wait
-from window import find_window_hwnds, find_rect, focus_window, NoWindowFoundError
+from window import find_window_hwnds, find_rect, NoWindowFoundError
 from screen import screenshot
-from detect import get_minimap_coor
-from detect.exceptions import NoCharacterInMinimap
+from ldetect import get_minimap_coor
+from ldetect.exceptions import NoCharacterInMinimap
 
 
 class Application:
@@ -26,10 +24,10 @@ class Application:
 
     def __init__(self, root):
         builder = pygubu.Builder()
-        builder.add_from_file('tile_designer/gui.ui')
+        builder.add_from_file('ldesigner/gui.ui')
         builder.get_object('main_frame', root)
         builder.connect_callbacks(self)
-        root.title('Tile Designer')
+        root.title('League of Legends Tile Designer')
         root.geometry('640x480+0+480')
         logger = CliLogger('%H:%M:%S')
         keyboard.add_hotkey('a', self.set_true)
@@ -91,3 +89,7 @@ def main():
     root = tk.Tk()
     Application(root)
     root.mainloop()
+
+
+if __name__ == "__main__":
+    main()

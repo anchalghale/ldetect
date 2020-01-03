@@ -1,4 +1,4 @@
-''' Utility functions '''
+''' Cv2 utility functions '''
 import cv2
 
 
